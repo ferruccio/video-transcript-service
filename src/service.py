@@ -21,10 +21,10 @@ mime = mimerender.FlaskMimeRender()
 )
 def youtube_transcript(vid):
     lang = request.args.get('lang')
-    if lang == None:
-        lang = 'en'
-    print 'lang: ', lang
-    return youtube.get_transcript(vid, lang)
+    if lang == None: lang = 'en'
+    transcript = youtube.get_transcript(vid, lang)
+    if transcript == None: return {}, 404
+    return transcript
 
 if __name__ == "__main__":
     app.run()

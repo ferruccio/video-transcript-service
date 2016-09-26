@@ -1,19 +1,20 @@
 from __future__ import unicode_literals
 import xmltodict
+import os
 
 import sys
 sys.path.append('./youtube_dl')
 import youtube_dl
 
 class Logger(object):
-    def debug(self, msg):
-        print('debug:', msg)
+	def debug(self, msg):
+		print 'debug:', msg
 
-    def warning(self, msg):
-        print('warn:', msg)
+	def warning(self, msg):
+		print 'warn:', msg
 
-    def error(self, msg):
-        print('error:', msg)
+	def error(self, msg):
+		print 'error:', msg
 
 def clean(src):
 	tt = src['tt']
@@ -26,7 +27,14 @@ def clean(src):
 					}, tt['body']['div']['p'])
 	}
 
+def delete_quietly(filename):
+	try:
+		os.remove(filename)
+	except OSError:
+		pass
+
 def get_transcript(video_id, lang):
+	base = '/tmp/vid-' + video_id
 	ydl_opts = {
 		'verbose' : True,
 	    'logger': Logger(),
@@ -39,9 +47,16 @@ def get_transcript(video_id, lang):
 		'cachedir': False,
 		'nocheckcertificate': True,
 		'no_color': True,
-		'outtmpl': '/tmp/vid-' + video_id
+		'outtmpl': base
 	}
 	with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-	    ydl.download(['https://www.youtube.com/watch?v=' + video_id])
-	    with open('/tmp/vid-' + video_id + '.' + lang + '.ttml') as transcript:
-	    	return clean(xmltodict.parse(transcript.read()))
+		filename = base + '.' + lang + '.ttml'
+		delete_quietly(filename)
+		try:
+			ydl.download(['https://www.youtube.com/watch?v=' + video_id])
+		except:
+			return None
+		else:
+		    if not os.path.isfile(filename): return None
+		    with open(filename) as transcript:
+		    	return clean(xmltodict.parse(transcript.read()))
