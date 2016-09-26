@@ -27,7 +27,6 @@ def clean(src):
 	}
 
 def get_transcript(video_id, lang):
-	lang = 'en'
 	ydl_opts = {
 		'verbose' : True,
 	    'logger': Logger(),

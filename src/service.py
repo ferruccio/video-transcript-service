@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-from flask import Flask
+from flask import Flask, request
 import json
 import xml
 import mimerender
@@ -20,7 +20,11 @@ mime = mimerender.FlaskMimeRender()
     html = lambda **args: '<html><body><pre>%s</pre></body></html>' % pprint.pformat(args)
 )
 def youtube_transcript(vid):
-    return youtube.get_transcript(vid, 'en')
+    lang = request.args.get('lang')
+    if lang == None:
+        lang = 'en'
+    print 'lang: ', lang
+    return youtube.get_transcript(vid, lang)
 
 if __name__ == "__main__":
     app.run()
