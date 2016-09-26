@@ -1,0 +1,3 @@
+[submodule "src/youtube_dl"]
+	path = src/youtube_dl
+	url = https://github.com/rg3/youtube-dl.git
