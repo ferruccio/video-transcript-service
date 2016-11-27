@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
-import xmltodict
 import os
+import ttml
 
 import sys
 sys.path.append('./youtube_dl')
@@ -15,17 +15,6 @@ class Logger(object):
 
 	def error(self, msg):
 		print 'error:', msg
-
-def clean(src):
-	tt = src['tt']
-	return {
-		'lang': tt['@xml:lang'],
-		'body': map(lambda p: {
-					'start': p['@begin'],
-					'stop': p['@end'],
-					'text': p['#text']
-					}, tt['body']['div']['p'])
-	}
 
 def delete_quietly(filename):
 	try:
@@ -57,6 +46,4 @@ def get_transcript(video_id, lang):
 		except:
 			return None
 		else:
-		    if not os.path.isfile(filename): return None
-		    with open(filename) as transcript:
-		    	return clean(xmltodict.parse(transcript.read()))
+			return ttml.parse(filename) if os.path.isfile(filename) else None
